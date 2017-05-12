@@ -4,6 +4,78 @@ pushd %~dp0
 
 REM Command file for Sphinx documentation
 
+REM Parsing of multiple commandline options and targets
+
+REM If no arguments passed at all, skip entirely
+if "%1"=="" goto make_main
+
+setlocal
+set TARGETS=
+set OPTIONS=
+
+:arg_loop
+if "%1"=="" goto arg_continue
+
+set WORK=%1
+set TAKESARG=0
+
+REM Have to have these outside the main IF block, else they don't store correctly
+if "%WORK:~0,2%"=="-b" set TAKESARG=1
+if "%WORK:~0,2%"=="-d" set TAKESARG=1
+if "%WORK:~0,2%"=="-j" set TAKESARG=1
+if "%WORK:~0,2%"=="-c" set TAKESARG=1
+if "%WORK:~0,2%"=="-D" set TAKESARG=1
+if "%WORK:~0,2%"=="-t" set TAKESARG=1
+if "%WORK:~0,2%"=="-A" set TAKESARG=1
+if "%WORK:~0,2%"=="-w" set TAKESARG=1
+
+REM Handle options versus targets
+if "%WORK:~0,1%"=="-" (
+   REM It's an option
+   if "%HASARG%"=="1" (
+      REM Option takes an argument; needs extra shift
+      set OPTIONS=%OPTIONS% %1 %2
+      shift /1
+      goto arg_shift
+      )
+
+   REM Option doesn't take an argument; no extra shift
+   set OPTIONS=%OPTIONS% %1
+   goto arg_shift
+   )
+
+REM Is a target, not an option; just store (comma-delimited) and shift
+set TARGETS=%TARGETS%,%1
+goto arg_shift
+
+:arg_shift
+REM Shift once
+shift /1
+goto arg_loop
+
+:arg_continue
+REM Strip leading comma from the targets, if any present
+if not "%TARGETS%"==""  set TARGETS=%TARGETS:~1%
+
+REM Check if single target; if not, loop and rerun make.bat once per target
+echo %TARGETS% | findstr "," 1>nul 2>nul
+set MULTITARGET=%ERRORLEVEL%
+if "%MULTITARGET%"=="0" (
+   REM Multiple targets; loop over targets and re-execute
+   for %%G in (%TARGETS%) DO (
+      call %0 %%G %OPTIONS%
+      )
+   REM Done once looping finished
+   endlocal
+   goto end
+   )
+
+REM Executed with single target, so fall through to main make.bat commands
+endlocal & set MAKETARGET=%TARGETS% & set MAKEOPTIONS=%OPTIONS%
+
+:make_main
+
+
 if "%SPHINXBUILD%" == "" (
 	set SPHINXBUILD=sphinx-build
 )
@@ -11,7 +83,7 @@ set SOURCEDIR={{ rsrcdir }}
 set BUILDDIR={{ rbuilddir }}
 set SPHINXPROJ={{ project_fn }}
 
-if "%1" == "" goto help
+if "%MAKETARGET%" == "" goto help
 
 %SPHINXBUILD% >NUL 2>NUL
 if errorlevel 9009 (
@@ -26,11 +98,11 @@ if errorlevel 9009 (
 	exit /b 1
 )
 
-%SPHINXBUILD% -M %1 %SOURCEDIR% %BUILDDIR% %SPHINXOPTS%
+%SPHINXBUILD% -M %MAKETARGET% %SOURCEDIR% %BUILDDIR% %SPHINXOPTS% %MAKEOPTIONS%
 goto end
 
 :help
-%SPHINXBUILD% -M help %SOURCEDIR% %BUILDDIR% %SPHINXOPTS%
+%SPHINXBUILD% -M help %SOURCEDIR% %BUILDDIR% %SPHINXOPTS% %MAKEOPTIONS%
 
 :end
 popd
