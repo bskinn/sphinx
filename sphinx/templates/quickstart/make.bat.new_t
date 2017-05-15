@@ -10,6 +10,7 @@ REM If no arguments passed at all, skip entirely
 if "%1"=="" goto make_main
 
 setlocal
+
 set TARGETS=
 set OPTIONS=
 
@@ -18,21 +19,29 @@ if "%1"=="" goto arg_continue
 
 set WORK=%1
 set TAKESARG=0
+set KEYVALUE=0
 
 REM Have to have these outside the main IF block, else they don't store correctly
-if "%WORK:~0,2%"=="-b" set TAKESARG=1
-if "%WORK:~0,2%"=="-d" set TAKESARG=1
-if "%WORK:~0,2%"=="-j" set TAKESARG=1
-if "%WORK:~0,2%"=="-c" set TAKESARG=1
-if "%WORK:~0,2%"=="-D" set TAKESARG=1
-if "%WORK:~0,2%"=="-t" set TAKESARG=1
-if "%WORK:~0,2%"=="-A" set TAKESARG=1
-if "%WORK:~0,2%"=="-w" set TAKESARG=1
+if "%WORK:~,1%"=="-" (
+   if "%WORK:~-1%"=="b" (
+      echo ERROR: Do not use '-b' option to specify make targets. Exiting...
+      endlocal
+      set ERRORLEVEL=1
+      goto end
+      )
+   if "%WORK:~-1%"=="d" set TAKESARG=1
+   if "%WORK:~-1%"=="j" set TAKESARG=1
+   if "%WORK:~-1%"=="c" set TAKESARG=1
+   if "%WORK:~-1%"=="D" set TAKESARG=1
+   if "%WORK:~-1%"=="t" set TAKESARG=1
+   if "%WORK:~-1%"=="A" set TAKESARG=1
+   if "%WORK:~-1%"=="w" set TAKESARG=1
+   )
 
 REM Handle options versus targets
-if "%WORK:~0,1%"=="-" (
+if "%WORK:~,1%"=="-" (
    REM It's an option
-   if "%HASARG%"=="1" (
+   if "%TAKESARG%"=="1" (
       REM Option takes an argument; needs extra shift
       set OPTIONS=%OPTIONS% %1 %2
       shift /1
@@ -63,7 +72,18 @@ set MULTITARGET=%ERRORLEVEL%
 if "%MULTITARGET%"=="0" (
    REM Multiple targets; loop over targets and re-execute
    for %%G in (%TARGETS%) DO (
+      echo.
+      echo Making target '%%G' with options '%OPTIONS%':
+      echo.
       call %0 %%G %OPTIONS%
+      REM Exit if error
+      if not "%ERRORLEVEL"=="0" (
+         echo.
+         echo Make error detected. Exiting...
+         echo.
+         endlocal
+         goto end
+         )
       )
    REM Done once looping finished
    endlocal
