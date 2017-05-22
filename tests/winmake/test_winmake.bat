@@ -7,6 +7,8 @@ set KEEP=0
 set VERBOSE=0
 set TESTDIR=testdir
 
+set HDR1======
+set HDR2=-----
 
 rem Parse arguments
 :arg_loop
@@ -43,25 +45,28 @@ if "%1"=="-h" (
 
 
 rem Quickstart Sphinx into new directory
+echo %HDR1% Creating new Sphinx doc sandbox ...
+echo.
+
 if exist %TESTDIR%\nul rmdir /s /q %TESTDIR%
+
 if "%VERBOSE%"=="1" (
     python ..\..\sphinx-quickstart.py -p test -a test -v 0.0 -r 0.0 -q %TESTDIR%
     ) else (
-    echo Creating Sphinx doc sandbox ...
-    echo.
     python ..\..\sphinx-quickstart.py -p test -a test -v 0.0 -r 0.0 -q %TESTDIR% 1>nul 2>nul
     )
+
 if %ERRORLEVEL% GTR 0 (
     echo.
-    echo Error quick-starting Sphinx.
-    echo Exiting...
+    echo %HDR1% Error quick-starting Sphinx.
+    echo %HDR1% Exiting...
     echo.
     goto end
     )
 
 
 rem Run the EXPECT-SUCCESS tests
-echo Running make operations expected to succeed:
+echo %HDR1% Running make operations expected to succeed:
 echo.
 set ELVAL=0
 
@@ -89,7 +94,7 @@ set TEST_HTML=%RESULT%
 
 rem Run the EXPECT-FAIL tests
 echo.
-echo Running make operations expected to fail:
+echo %HDR1% Running make operations expected to fail:
 echo.
 set ELVAL=1
 
@@ -142,11 +147,14 @@ goto end
 
 :run_test
 rem Run the test, with output suppressed by default
+if "%VERBOSE%"=="1" echo. & echo.
+
+echo %HDR2% Testing 'make %PARAMS%' ...
+
 if "%VERBOSE%"=="0" (
-    echo Testing 'make %PARAMS%' ...
     call %TESTDIR%\make %PARAMS% 1>nul 2>nul
     ) else (
-    call %TESTDIR\make %PARAMS%
+    call %TESTDIR%\make %PARAMS%
     )
 
 rem Equality comparison to the indicated expected test result
@@ -167,10 +175,13 @@ goto %RETURN%
 
 rem Remove test folder if it exists and KEEP is 0
 if "%KEEP%"=="0" (
-    echo Removing Sphinx doc sandbox ...
+    echo %HDR1% Removing Sphinx doc sandbox ...
     echo.
     if exist %TESTDIR%\nul rmdir /s /q %TESTDIR%
-    echo Done.
+    echo %HDR1% Done.
+    echo.
+    ) else (
+    echo %HDR1% Sphinx doc sandbox left in place.
     echo.
     )
 
