@@ -95,6 +95,9 @@ endlocal & set MAKETARGET=%TARGETS% & set MAKEOPTIONS=%OPTIONS%
 
 :make_main
 
+rem Fix the trailing space on the single builder target
+set MAKETARGET=%MAKETARGET:~,-1%
+
 
 if "%SPHINXBUILD%" == "" (
 	set SPHINXBUILD=sphinx-build

@@ -6,6 +6,7 @@ rem Set defaults
 set KEEP=0
 set VERBOSE=0
 set TESTDIR=testdir
+set MAKEMODE=0
 
 
 rem Parse arguments
@@ -24,6 +25,12 @@ if "%1"=="-v" (
     goto arg_loop
     )
 
+if "%1"=="-o" (
+    set MAKEMODE=1
+    shift /1
+    goto arg_loop
+    )
+
 if "%1"=="-h" (
     echo.
     echo Test runner for Windows make.bat
@@ -33,6 +40,7 @@ if "%1"=="-h" (
     echo.
     echo -h   - Show this help
     echo -k   - Keep test directory after running tests
+    echo -o   - Test the old-style make.bat
     echo -v   - Show output from executed commands
     echo.
     goto end
@@ -41,15 +49,22 @@ if "%1"=="-h" (
 
 :end_arg_loop
 
+rem Set the make mode option to use based on the passed flag
+if "%MAKEMODE%"=="0" (
+    set MAKEMODEOPT=--use-make-mode
+    ) else (
+    set MAKEMODEOPT=--no-use-make-mode
+    )
+
 
 rem Quickstart Sphinx into new directory
 if exist %TESTDIR%\nul rmdir /s /q %TESTDIR%
 if "%VERBOSE%"=="1" (
-    python ..\..\sphinx-quickstart.py -p test -a test -v 0.0 -r 0.0 -q %TESTDIR%
+    python ..\..\sphinx-quickstart.py -p test -a test -v 0.0 -r 0.0 -q %TESTDIR% %MAKEMODEOPT%
     ) else (
     echo Creating Sphinx doc sandbox ...
     echo.
-    python ..\..\sphinx-quickstart.py -p test -a test -v 0.0 -r 0.0 -q %TESTDIR% 1>nul 2>nul
+    python ..\..\sphinx-quickstart.py -p test -a test -v 0.0 -r 0.0 -q %TESTDIR% %MAKEMODEOPT% 1>nul 2>nul
     )
 if %ERRORLEVEL% GTR 0 (
     echo.
@@ -63,14 +78,32 @@ if %ERRORLEVEL% GTR 0 (
 rem Run the EXPECT-SUCCESS tests
 echo Running make operations expected to succeed:
 echo.
-set ELVAL=0
 
-rem === make -h ===
-set PARAMS=-h
-set RETURN=RET_H
-goto run_test
-:RET_H
-set TEST_H=%RESULT%
+rem 'help' test is oddly behaved
+if "%MAKEMODE%"=="0" (
+    rem === make -h ===
+    set PARAMS=-h
+    set RETURN=RET_H_NEW
+    set ELVAL=0
+    goto run_test
+    :RET_H_NEW
+    set TEST_H=%RESULT%
+    goto end_help_test
+    ) else (
+    rem === make help ===
+    set PARAMS=help
+    set RETURN=RET_H_OLD
+    set ELVAL=1
+    goto run_test
+    :RET_H_OLD
+    set TEST_H=%RESULT%
+    )
+
+:end_help_test
+
+
+rem Rest should exit success
+set ELVAL=0
 
 rem === make clean ===
 set PARAMS=clean
@@ -125,7 +158,11 @@ echo ==========================================
 echo.
 echo          Args           Expect    Result
 echo  --------------------  --------  --------
-echo   -h                      OK      %TEST_H%
+if "%MAKEMODE%"=="0" (
+    echo   -h                      OK      %TEST_H%
+    ) else (
+    echo   help                    OK      %TEST_H%
+    )
 echo   clean                   OK      %TEST_CLEAN%
 echo   html                    OK      %TEST_HTML%
 echo.
@@ -172,7 +209,9 @@ if "%KEEP%"=="0" (
     if exist %TESTDIR%\nul rmdir /s /q %TESTDIR%
     echo Done.
     echo.
-    )
+    ) else (
+    echo Sphinx doc sandbox left on disk.
+    echo.
 
 endlocal
 
