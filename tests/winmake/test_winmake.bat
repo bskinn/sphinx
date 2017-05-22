@@ -141,18 +141,22 @@ goto end
 
 
 :run_test
+rem Run the test, with output suppressed by default
 if "%VERBOSE%"=="0" (
     echo Testing 'make %PARAMS%' ...
     call %TESTDIR%\make %PARAMS% 1>nul 2>nul
     ) else (
     call %TESTDIR\make %PARAMS%
     )
-rem call %TESTDIR%\make %PARAMS%
+
+rem Equality comparison to the indicated expected test result
 if %ERRORLEVEL% EQU %ELVAL% (
     set RESULT=-pass-
     ) else (
     set RESULT=*FAIL*
     )
+
+rem "Callback" to the particular test
 goto %RETURN%
 
 
