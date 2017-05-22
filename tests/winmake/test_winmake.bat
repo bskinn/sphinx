@@ -37,7 +37,7 @@ if "%1"=="-h" (
     echo -k   - Keep test directory after running tests
     echo -v   - Show output from executed commands
     echo.
-    goto end
+    goto end_help
     )
 
 
@@ -184,6 +184,8 @@ if "%KEEP%"=="0" (
     echo %HDR1% Sphinx doc sandbox left in place.
     echo.
     )
+
+:end_help
 
 endlocal
 
