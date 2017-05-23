@@ -75,9 +75,9 @@ if "%MULTITARGET%"=="0" (
       echo.
       echo Making target '%%G' with options '%OPTIONS%':
       echo.
-      call %0 %%G %OPTIONS%
+      call make %%G %OPTIONS%
       REM Exit if error
-      if not "%ERRORLEVEL"=="0" (
+      if %ERRORLEVEL% GTR 0 (
          echo.
          echo Make error detected. Exiting...
          echo.
