@@ -32,9 +32,9 @@ if "%WORK:~,1%"=="-" (
    if "%WORK:~-1%"=="d" set TAKESARG=1
    if "%WORK:~-1%"=="j" set TAKESARG=1
    if "%WORK:~-1%"=="c" set TAKESARG=1
-   if "%WORK:~-1%"=="D" set TAKESARG=1
+   if "%WORK:~-1%"=="D" set TAKESARG=2
    if "%WORK:~-1%"=="t" set TAKESARG=1
-   if "%WORK:~-1%"=="A" set TAKESARG=1
+   if "%WORK:~-1%"=="A" set TAKESARG=2
    if "%WORK:~-1%"=="w" set TAKESARG=1
    )
 
@@ -44,6 +44,14 @@ if "%WORK:~,1%"=="-" (
    if "%TAKESARG%"=="1" (
       REM Option takes an argument; needs extra shift
       set OPTIONS=%OPTIONS% %1 %2
+      shift /1
+      goto arg_shift
+      )
+
+   if "%TAKESARG%"=="2" (
+      REM Option takes a key-value argument pair; needs two extra shifts
+      set OPTIONS=%OPTIONS% %1 %2=%3
+      shift /1
       shift /1
       goto arg_shift
       )

@@ -144,6 +144,41 @@ goto run_test
 :RET_HTML_E
 set TEST_HTML_E=%RESULT%
 
+rem === make html -Ec . ===
+set PARAMS=html -Ec .
+set RETURN=RET_HTML_E_C_dot
+goto run_test
+:RET_HTML_E_C_dot
+set TEST_HTML_E_C_dot=%RESULT%
+
+rem === make clean html -Ec . ===
+set PARAMS=clean html -Ec .
+set RETURN=RET_CLEAN_HTML_E_C_dot
+goto run_test
+:RET_CLEAN_HTML_E_C_dot
+set TEST_CLEAN_HTML_E_C_dot=%RESULT%
+
+rem === make clean html epub ===
+set PARAMS=clean html epub
+set RETURN=RET_CLEAN_HTML_EPUB
+goto run_test
+:RET_CLEAN_HTML_EPUB
+set TEST_CLEAN_HTML_EPUB=%RESULT%
+
+rem === make clean html epub -E ===
+set PARAMS=clean html epub -E
+set RETURN=RET_CLEAN_HTML_EPUB_E
+goto run_test
+:RET_CLEAN_HTML_EPUB_E
+set TEST_CLEAN_HTML_EPUB_E=%RESULT%
+
+rem === make clean html -D rst_epilog="**THIS**" ===
+set PARAMS=clean html -D rst_epilog="**THIS**"
+set RETURN=RET_CLEAN_HTML_D_RST
+goto run_test
+:RET_CLEAN_HTML_D_RST
+set TEST_CLEAN_HTML_D_RST=%RESULT%
+
 
 rem Run the EXPECT-FAIL tests
 if %SILENT% EQU 0 (
@@ -180,25 +215,30 @@ rem Report Results
 if %SILENT% EQU 0 (
     echo.
     echo.
-    echo ==========================================
-    echo                TEST RESULTS
-    echo ==========================================
+    echo ============================================================
+    echo                         TEST RESULTS
+    echo ============================================================
     echo.
-    echo          Args           Expect    Result
-    echo  --------------------  --------  --------
-    echo   -h                      OK      %TEST_H%
-    echo   clean                   OK      %TEST_CLEAN%
-    echo   html                    OK      %TEST_HTML%
-    echo   latex                   OK      %TEST_LATEX%
-    echo   clean html              OK      %TEST_CLEAN_HTML%
-    echo   html -a                 OK      %TEST_HTML_A%
-    echo   html -E                 OK      %TEST_HTML_E%
+    echo          Args                             Expect    Result
+    echo  --------------------------------------  --------  --------
+    echo   -h                                        OK      %TEST_H%
+    echo   clean                                     OK      %TEST_CLEAN%
+    echo   html                                      OK      %TEST_HTML%
+    echo   latex                                     OK      %TEST_LATEX%
+    echo   clean html                                OK      %TEST_CLEAN_HTML%
+    echo   html -a                                   OK      %TEST_HTML_A%
+    echo   html -E                                   OK      %TEST_HTML_E%
+    echo   html -Ec .                                OK      %TEST_HTML_E_C_dot%
+    echo   clean html -Ec .                          OK      %TEST_CLEAN_HTML_E_C_dot%
+    echo   clean html epub                           OK      %TEST_CLEAN_HTML_EPUB%
+    echo   clean html epub -E                        OK      %TEST_CLEAN_HTML_EPUB_E%
+    echo   clean html -D rst_epilog="**THIS**"       OK      %TEST_CLEAN_HTML_D_RST%
     echo.
-    echo   -b html                ERROR    %TEST_B_HTML%
-    echo   clean html -c ..       ERROR    %TEST_CLEAN_HTML_C_dd%
-    echo   foo                    ERROR    %TEST_FOO%
+    echo   -b html                                  ERROR    %TEST_B_HTML%
+    echo   clean html -c ..                         ERROR    %TEST_CLEAN_HTML_C_dd%
+    echo   foo                                      ERROR    %TEST_FOO%
     echo.
-    echo ==========================================
+    echo ============================================================
     echo.
     echo.
     )
