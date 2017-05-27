@@ -151,6 +151,13 @@ goto run_test
 :RET_HTML_E_C_dot
 set TEST_HTML_E_C_dot=%RESULT%
 
+rem === make html -qWE ===
+set PARAMS=html -qWE
+set RETURN=RET_HTML_QWE
+goto run_test
+:RET_HTML_QWE
+set TEST_HTML_QWE=%RESULT%
+
 rem === make clean html -Ec . ===
 set PARAMS=clean html -Ec .
 set RETURN=RET_CLEAN_HTML_E_C_dot
@@ -209,6 +216,13 @@ goto run_test
 :RET_FOO
 set TEST_FOO=%RESULT%
 
+rem === make html -qW.E ===
+set PARAMS=html -qW.E
+set RETURN=RET_HTML_QWdotE
+goto run_test
+:RET_HTML_QWdotE
+set TEST_HTML_QWdotE=%RESULT%
+
 
 
 rem Report Results
@@ -229,6 +243,7 @@ if %SILENT% EQU 0 (
     echo   html -a                                   OK      %TEST_HTML_A%
     echo   html -E                                   OK      %TEST_HTML_E%
     echo   html -Ec .                                OK      %TEST_HTML_E_C_dot%
+    echo   html -qWE                                 OK      %TEST_HTML_QWE%
     echo   clean html -Ec .                          OK      %TEST_CLEAN_HTML_E_C_dot%
     echo   clean html epub                           OK      %TEST_CLEAN_HTML_EPUB%
     echo   clean html epub -E                        OK      %TEST_CLEAN_HTML_EPUB_E%
@@ -237,6 +252,7 @@ if %SILENT% EQU 0 (
     echo   -b html                                  ERROR    %TEST_B_HTML%
     echo   clean html -c ..                         ERROR    %TEST_CLEAN_HTML_C_dd%
     echo   foo                                      ERROR    %TEST_FOO%
+    echo   html -qW.E                               ERROR    %TEST_HTML_QWdotE%
     echo.
     echo ============================================================
     echo.
