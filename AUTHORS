@@ -53,6 +53,7 @@ Other contributors, listed alphabetically, are:
 * Jeppe Pihl -- literalinclude improvements
 * Rob Ruana -- napoleon extension
 * Stefan Seefeld -- toctree improvements
+* Brian Skinn -- Enhanced make.bat
 * Gregory Szorc -- performance improvements
 * Shibukawa Yoshiki -- pluggable search API and Japanese search, epub3 builder improvements
 * Taku Shimizu -- epub3 builder

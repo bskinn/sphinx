@@ -36,14 +36,20 @@ if "%1"=="-s" (
 
 if "%1"=="-h" (
     echo.
-    echo Test runner for Windows make.bat
+    echo Test runner for Windows make.bat.
+    echo.
+    echo These tests only check for a successful [ERRORLEVEL==0]
+    echo or unsuccessful [ERRORLEVEL==1] execution of make.bat.
+    echo They do NOT check for whether the build operations
+    echo actually completed correctly.
+    echo.
     echo.
     echo Options
     echo =======
     echo.
     echo -h   - Show this help
     echo -k   - Keep test directory after running tests
-    echo -s   - Run tests with all output suppressed
+    echo -s   - Run tests with all output and status information suppressed
     echo -v   - Show output from executed commands
     echo.
     goto end_help
@@ -233,7 +239,7 @@ if %SILENT% EQU 0 (
     echo                         TEST RESULTS
     echo ============================================================
     echo.
-    echo          Args                             Expect    Result
+    echo          Arguments                        Expect    Result
     echo  --------------------------------------  --------  --------
     echo   -h                                        OK      %TEST_H%
     echo   clean                                     OK      %TEST_CLEAN%

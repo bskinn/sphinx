@@ -26,9 +26,10 @@ if "%WORK:~,1%"=="-" (
    if "%WORK:~-1%"=="b" (
       echo ERROR: Do not use '-b' option to specify make targets. Exiting...
       endlocal
-      set ERRORLEVEL=1
-      goto end
+      goto end_error
       )
+   rem This list needs to be updated if new options are implemented
+   rem  that take values
    if "%WORK:~-1%"=="d" set TAKESARG=1
    if "%WORK:~-1%"=="j" set TAKESARG=1
    if "%WORK:~-1%"=="c" set TAKESARG=1
@@ -134,4 +135,9 @@ goto end
 
 :end
 popd
+exit /b
+
+:end_error
+popd
+exit /b 1
 
